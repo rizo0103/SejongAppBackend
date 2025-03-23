@@ -44,3 +44,39 @@ class Announcement(models.Model):
                 img.save(self.image.path)
 
 
+
+# #--------------------------------------- Lesson
+# class Lesson(models.Model):
+#     name = models.CharField(max_length=255)  # Название предмета или урока
+#     teacher = models.CharField(max_length=255)  # Преподаватель
+
+#     def __str__(self):
+#         return self.name
+
+#--------------------------------------- Schedule
+class Schedule(models.Model):
+    DAYS_OF_WEEK = [
+        ('Понедельник', 'Понедельник'),
+        ('Вторник', 'Вторник'),
+        ('Среда', 'Среда'),
+        ('Четверг', 'Четверг'),
+        ('Пятница', 'Пятница'),
+        ('Суббота', 'Суббота'),
+        ('Воскресенье', 'Воскресенье'),
+    ]
+
+    _id = models.ObjectIdField()
+    group = models.ForeignKey(
+        StudentGroup,
+        on_delete=models.CASCADE,
+        to_field= "name"  # Явно указываем, что связь идёт по ObjectId
+    )
+    # lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    day_of_week = models.CharField(max_length=50, choices=DAYS_OF_WEEK)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.group.name} - {self.day_of_week} ({self.start_time} - {self.end_time})"  
+    
+
