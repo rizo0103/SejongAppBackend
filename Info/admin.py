@@ -8,6 +8,6 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ('start_time', 'end_time')  # Customize fields to display in admin
-    search_fields = ('start_time', 'end_time')      # Add search functionality
-    list_filter = ('start_time', 'end_time')        # Add filter options
+    list_display = ('day', 'start_time', 'end_time', 'classroom')  # Customize fields to display in admin
+    search_fields = ('day', 'start_time', 'end_time', 'classroom')      # Add search functionality
+    list_filter = ('day', 'start_time', 'end_time', 'classroom')        # Add filter options

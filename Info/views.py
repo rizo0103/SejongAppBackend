@@ -23,7 +23,7 @@ def get_all_schedules(request):
                 'group': schedule.group,
                 'teacher': schedule.teacher,
                 'book': schedule.book,
-                "time": schedule.time if schedule.time else [],
+                "timeJSON": schedule.timeJSON if schedule.timeJSON else [],
             })
             
         return JsonResponse(data, safe=False)

@@ -7,7 +7,15 @@ class TimeSlot(models.Model):
     """
     Model that represents time slot in schedule (Django relational model)
     """
-    day = models.IntegerField()
+    day = models.IntegerField(choices=[
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday')
+    ])
     start_time = models.TimeField()
     end_time = models.TimeField()
     classroom = models.IntegerField(choices=[
@@ -19,7 +27,7 @@ class TimeSlot(models.Model):
     ])
 
     def __str__(self):
-        return f"{self.day} {self.start_time} - {self.end_time} ({self.classroom})"
+        return f"{self.get_day_display()} {self.start_time} - {self.end_time} ({self.get_classroom_display()})"
 
 
 class Schedule(models.Model):
