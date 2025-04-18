@@ -36,12 +36,12 @@ class Schedule(models.Model):
     """
     group = models.CharField(max_length=50, blank=False, help_text="Group name")
 
-    time = models.ManyToManyField(
+    time_many_to_many = models.ManyToManyField(
         TimeSlot,
         blank=False,
         help_text="Time slots for the schedule"
     )
-    timeJSON = models.JSONField(blank=True, null=True, help_text="Serialized time slots")
+    time = models.JSONField(blank=True, null=True, help_text="Serialized time slots")
 
     teacher = models.CharField(max_length=100, blank=False, help_text="Teacher name")
     book = models.IntegerField(
@@ -59,10 +59,10 @@ class Schedule(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        self.timeJSON = []
+        self.time = []
 
-        for time_slot in self.time.all():
-            self.timeJSON.append({
+        for time_slot in self.time_many_to_many.all():
+            self.time.append({
                 "day": time_slot.day,
                 "start_time": time_slot.start_time.strftime("%H:%M"),
                 "end_time": time_slot.end_time.strftime("%H:%M"),
