@@ -1,14 +1,20 @@
-import os
 import re
 from datetime import time
 from django.db import models
-from gdstorage.storage import GoogleDriveStorage
-from django_mongodb_backend.fields import ObjectIdAutoField
-from django.db.models.signals import m2m_changed
+from django.db import transaction
 from django.dispatch import receiver
+from gdstorage.storage import GoogleDriveStorage
+from django.db.models.signals import m2m_changed
 
         
 gd_storage = GoogleDriveStorage()
+
+class Counter(models.Model):
+    collection_name = models.CharField(max_length=100, unique=True)
+    current_id = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = 'counters'
 
 class TimeSlot(models.Model):
     """
@@ -64,7 +70,6 @@ class Schedule(models.Model):
         return f"{self.group} - {self.teacher}"
     
 class AnnouncementImage(models.Model):
-    id = ObjectIdAutoField(primary_key=True, auto_created=True, verbose_name="ID")
     title = models.CharField(max_length=200, blank=False, help_text="Image title")
     image = models.ImageField(upload_to='sejong/announcements', storage=gd_storage, help_text="Image file")
     google_drive_file_id = models.CharField(max_length = 100, blank = True, null = True, help_text = "Google Drive file Id")
@@ -88,6 +93,7 @@ class Announcement(models.Model):
     """
     Model for storing announcements (Django relational model)
     """
+    custom_id = models.IntegerField(unique = True, blank = True, null = True)
     title = models.CharField(max_length=200, blank=False, help_text="Announcement title")
     content = models.TextField(blank=False, help_text="Announcement content")
     images_many_to_many = models.ManyToManyField(AnnouncementImage, blank=True, help_text="Images related to the announcement")
@@ -101,6 +107,12 @@ class Announcement(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        if self.custom_id is None:
+            self.custom_id = get_next_id('announcements')
+        
+        super().save(*args, **kwargs)
 
 @receiver(m2m_changed, sender=Schedule.time_many_to_many.through)
 def update_schedule_time(sender, instance, action, **kwargs):
@@ -120,3 +132,10 @@ def update_announcement_images(sender, instance, action, **kwargs):
     if action in ['post_add', 'post_remove', 'post_clear']:
         instance.images = [img.google_drive_file_id for img in instance.images_many_to_many.all()]
         instance.save(update_fields=['images'])
+
+@transaction.atomic
+def get_next_id(collection_name):
+    counter, _ = Counter.objects.get_or_create(collection_name=collection_name)
+    counter.current_id += 1
+    counter.save()
+    return counter.current_id
