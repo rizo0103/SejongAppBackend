@@ -42,6 +42,7 @@ def get_all_announcements(request):
                 "time_posted": announcement.time_posted.strftime("%Y-%m-%d %H:%M:%S"),
                 "author": announcement.author,
                 "is_active": announcement.is_active,
+                "custom_id": announcement.custom_id,
             })
             
         return JsonResponse(data, safe=False)
