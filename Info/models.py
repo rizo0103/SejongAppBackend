@@ -63,21 +63,6 @@ class Schedule(models.Model):
     def __str__(self):
         return f"{self.group} - {self.teacher}"
     
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        self.time = []
-
-        for time_slot in self.time_many_to_many.all():
-            self.time.append({
-                "day": time_slot.day,
-                "start_time": time_slot.start_time.strftime("%H:%M"),
-                "end_time": time_slot.end_time.strftime("%H:%M"),
-                "classroom": time_slot.classroom
-            })
-
-        super().save(*args, **kwargs)
-
 class AnnouncementImage(models.Model):
     id = ObjectIdAutoField(primary_key=True, auto_created=True, verbose_name="ID")
     title = models.CharField(max_length=200, blank=False, help_text="Image title")
@@ -116,6 +101,19 @@ class Announcement(models.Model):
 
     def __str__(self):
         return self.title
+
+@receiver(m2m_changed, sender=Schedule.time_many_to_many.through)
+def update_schedule_time(sender, instance, action, **kwargs):
+    if action in ['post_add', 'post_remove', 'post_clear']:
+        instance.time = []
+        for time_slot in instance.time_many_to_many.all():
+            instance.time.append({
+                "day": time_slot.day,
+                "start_time": time_slot.start_time.strftime("%H:%M"),
+                "end_time": time_slot.end_time.strftime("%H:%M"),
+                "classroom": time_slot.classroom
+            })
+        instance.save(update_fields=['time'])
 
 @receiver(m2m_changed, sender=Announcement.images_many_to_many.through)
 def update_announcement_images(sender, instance, action, **kwargs):
