@@ -1,7 +1,8 @@
 from datetime import time
 from django.db import models
-from django_mongodb_backend.models import EmbeddedModel
-from django_mongodb_backend.fields import EmbeddedModelField, ArrayField
+from gdstorage.storage import GoogleDriveStorage
+
+gd_storage = GoogleDriveStorage()
 
 class TimeSlot(models.Model):
     """
@@ -70,3 +71,23 @@ class Schedule(models.Model):
             })
 
         super().save(*args, **kwargs)
+
+class AnnouncementImage(models.Model):
+    image = models.ImageField(upload_to='sejong/announcements', storage=gd_storage, help_text="Image file")
+
+class Announcement(models.Model):
+    """
+    Model for storing announcements (Django relational model)
+    """
+    title = models.CharField(max_length=200, blank=False, help_text="Announcement title")
+    content = models.TextField(blank=False, help_text="Announcement content")
+    images = []
+    time_posted = models.DateTimeField(auto_now_add=True, help_text="Date of announcement")
+    author = models.CharField(max_length=100, blank=False, help_text="Author of the announcement")
+    is_active = models.BooleanField(default=True, help_text="Is the announcement active?")
+
+    class Meta:
+        db_table = 'announcements'
+
+    def __str__(self):
+        return self.title

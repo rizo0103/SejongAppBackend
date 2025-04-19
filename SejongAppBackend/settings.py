@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'Info',
+    'gdstorage',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,6 @@ MIGRATION_MODULES = {
     'auth': 'mongo_migrations.auth',
     'contenttypes': 'mongo_migrations.contenttypes',
 }
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'sejong-app-de936cdff9c7.json'
+# GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = "sejong"
