@@ -27,7 +27,7 @@ SECRET_KEY = '1u695jxow=#k$d5e_bd$(x%2glm)z*s5h^0tt6nrgvy#8bo^jc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'elibrary',
+    'gdstorage',
 ]
 
 MIDDLEWARE = [
@@ -76,9 +78,17 @@ WSGI_APPLICATION = 'quickstart.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": django_mongodb_backend.parse_uri("mongodb+srv://ikromi:ikromi@cluster1.qs4nk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1", db_name="ikromi"),
+# }
+
 DATABASES = {
-    "default": django_mongodb_backend.parse_uri("mongodb+srv://ikromi:ikromi@cluster1.qs4nk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1", db_name="ikromi"),
+            'default': django_mongodb_backend.parse_uri(
+                'mongodb://localhost:27017/admin', 
+                db_name='ikromi'
+                ),
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -127,3 +137,6 @@ MIGRATION_MODULES = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'sejong-test-457407-d15080be3cb9.json'
+# GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = '<base google drive path for file uploads>' # OPTIONAL

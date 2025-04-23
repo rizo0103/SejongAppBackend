@@ -17,3 +17,5 @@ class UserAdminForm(forms.ModelForm):
         if not phone.startswith('+992') or len(phone) != 13:
             raise forms.ValidationError("Phone number must be in format +992XXXXXXXXX")
         return phone
+
+    
