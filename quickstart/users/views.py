@@ -53,11 +53,17 @@ def login_view(request):
                 return JsonResponse({'error': 'Please send correct data'})
 
             user = authenticate(request, username = username, password = password)
-
-            return JsonResponse({"user_data": {
-                "username": user.username,
-                "is_superuser": user.is_superuser
-            }})
+            if user:
+                return JsonResponse({"user_data": {
+                    "username": user.username,
+                    "group": user.get_groups(),
+                    "fullname": user.fullname,
+                    "email":user.email,
+                    "phone_number": user.phone_number,
+                    "avatar": user.avatar_id
+                }})
+            else:
+                return JsonResponse({"error": "user not found"})
         except Exception as e:
             return JsonResponse({"ERROR": str(e)})
     return JsonResponse({"message": "post requests allowed only"})
