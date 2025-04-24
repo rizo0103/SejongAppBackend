@@ -5,27 +5,27 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-def get_all_users(request):
-    if request.method == "GET":
-        users = User.objects.all()
-        data = []
+# def get_all_users(request):
+#     if request.method == "GET":
+#         users = User.objects.all()
+#         data = []
 
-        for user in users:
-            data.append({
-                'username': user.username,
-                'fullname': user.fullname,
-                'email': user.email,
-                'phone_number': user.phone_number,
-                'status': user.status,
-                'groups': user.get_groups(),
-                'avatar': user.avatar_id,
-                'date_joined': user.date_joined,
-                'is_active': user.is_active,
-                'is_staff': user.is_staff,
-                'is_superuser': user.is_superuser,
-            })
+#         for user in users:
+#             data.append({
+#                 'username': user.username,
+#                 'fullname': user.fullname,
+#                 'email': user.email,
+#                 'phone_number': user.phone_number,
+#                 'status': user.status,
+#                 'groups': user.get_groups(),
+#                 'avatar': user.avatar_id,
+#                 'date_joined': user.date_joined,
+#                 'is_active': user.is_active,
+#                 'is_staff': user.is_staff,
+#                 'is_superuser': user.is_superuser,
+#             })
 
-    return JsonResponse(data, safe=False)
+#     return JsonResponse(data, safe=False)
 
 
 def get_all_groups(request):
@@ -55,12 +55,13 @@ def login_view(request):
             user = authenticate(request, username = username, password = password)
             if user:
                 return JsonResponse({"user_data": {
+                    "avatar": user.avatar_id,
                     "username": user.username,
-                    "group": user.get_groups(),
                     "fullname": user.fullname,
-                    "email":user.email,
                     "phone_number": user.phone_number,
-                    "avatar": user.avatar_id
+                    "email":user.email,
+                    'status': user.status,
+                    "group": user.get_groups(),
                 }})
             else:
                 return JsonResponse({"error": "user not found"})
