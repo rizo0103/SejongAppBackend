@@ -58,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=13, validators=[phone_validator], blank=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Student')
     group = models.ManyToManyField("Groups", related_name="user_set", blank=True)  
-    avatar = models.ImageField(upload_to="Sejong/users/avatars", storage=gd_storage, blank=True) 
+    avatar = models.ImageField(upload_to="SejongApp/users/avatars", storage=gd_storage, blank=True) 
     date_joined = models.DateTimeField(default=timezone.now)
     avatar_id = models.CharField(max_length=250, blank=True, null=True, help_text="Don't touch!!!")
 

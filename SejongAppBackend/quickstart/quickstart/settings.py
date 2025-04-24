@@ -138,5 +138,5 @@ MIGRATION_MODULES = {
 
 AUTH_USER_MODEL = 'users.User'
 
-GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'sejong-test-457407-d15080be3cb9.json'
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = 'sejong-test-457407-1bda7dbceb54.json'
 # GOOGLE_DRIVE_STORAGE_MEDIA_ROOT = '<base google drive path for file uploads>' # OPTIONAL
