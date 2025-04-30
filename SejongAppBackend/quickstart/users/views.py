@@ -27,7 +27,6 @@ import json
 
 #     return JsonResponse(data, safe=False)
 
-
 def get_all_groups(request):
     if request.method == "GET":
         groups = Groups.objects.all()
@@ -67,4 +66,45 @@ def login_view(request):
                 return JsonResponse({"error": "user not found"})
         except Exception as e:
             return JsonResponse({"ERROR": str(e)})
-    return JsonResponse({"message": "post requests allowed only"})
+    return JsonResponse({"message": "Only POST requests are allowed"})
+
+def change_username(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            new_username = data.get("new_password")
+
+            if not new_username:
+                return JsonResponse({"error": "Username is required"}, status=400)
+            
+            if User.objects.filter(username = new_username).exists():
+                return JsonResponse({"error": "Username already taken"})
+            
+            user = request.user
+            user.username = new_username
+            user.save()
+            return JsonResponse({"message": "Username updated successfully", "new_password": new_username})
+
+        except Exception as e:
+            return JsonResponse({"ERROR": str(e)})
+        
+    return JsonResponse({"error": "Only POST requests are allowed"})
+
+def change_password(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            new_password = data.get("new_password")
+
+            if not new_password:
+                return JsonResponse({"error": "Password is required"}, status=400)
+            
+            user = request.user
+            user.password = new_password
+            user.save()
+            return JsonResponse({"message": "Password updated successfully", "new_password": new_password})
+
+        except Exception as e:
+            return JsonResponse({"ERROR": str(e)})
+        
+    return JsonResponse({"error": "Only POST requests are allowed"})
