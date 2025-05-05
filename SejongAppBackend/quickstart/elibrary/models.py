@@ -29,16 +29,18 @@ class Book(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-        cover_url = self.cover.storage.url(self.cover.name)
-        match_cover = re.search(r'id=([^&]+)', cover_url)
-        self.cover_id = f'https://drive.google.com/thumbnail?id={match_cover.group(1)}' if match_cover else None
-        super().save(update_fields = ['cover_id'])
-
-        file_url = self.file.storage.url(self.file.name)
-        match_file = re.search(r'id=([^&]+)', file_url)
-        self.file_id = f'https://drive.google.com/thumbnail?id={match_file.group(1)}' if match_file else None    
-        super().save(update_fields = ['file_id'])  
+        
+        if self.cover:
+            cover_url = self.cover.storage.url(self.cover.name)
+            match_cover = re.search(r'id=([^&]+)', cover_url)
+            self.cover_id = f'https://drive.google.com/thumbnail?id={match_cover.group(1)}' if match_cover else None
+            super().save(update_fields = ['cover_id'])
+        
+        if self.file:
+            file_url = self.file.storage.url(self.file.name)
+            match_file = re.search(r'id=([^&]+)', file_url)
+            self.file_id = f'https://drive.google.com/thumbnail?id={match_file.group(1)}' if match_file else None    
+            super().save(update_fields = ['file_id'])  
 
     def __str__(self):
         return self.title

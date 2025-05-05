@@ -5,8 +5,10 @@ from django.core.validators import RegexValidator
 from gdstorage.storage import GoogleDriveStorage
 import re
 from django.utils.html import format_html
-from pymongo import MongoClient
-from bson import ObjectId
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 gd_storage = GoogleDriveStorage()
 
@@ -80,10 +82,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        avatar_url = self.avatar.storage.url(self.avatar.name)
-        match_avatar = re.search(r'id=([^&]+)', avatar_url)
-        self.avatar_id = f'https://drive.google.com/thumbnail?id={match_avatar.group(1)}' if match_avatar else None
-        super().save(update_fields = ['avatar_id'])
+        if self.avatar:
+            avatar_url = self.avatar.storage.url(self.avatar.name)
+            match_avatar = re.search(r'id=([^&]+)', avatar_url)
+            self.avatar_id = f'https://drive.google.com/thumbnail?id={match_avatar.group(1)}' if match_avatar else None
+            super().save(update_fields = ['avatar_id'])
 
     def __str__(self):
         return self.username
@@ -115,3 +118,8 @@ class Groups(models.Model):
 
     def __str__(self):
         return self.name
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
