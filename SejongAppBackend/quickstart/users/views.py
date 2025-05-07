@@ -4,6 +4,7 @@ from .models import User, Groups
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework.authtoken.models import Token
 
 # def get_all_users(request):
 #     if request.method == "GET":
@@ -53,15 +54,17 @@ def login_view(request):
 
             user = authenticate(request, username = username, password = password)
             if user:
-                return JsonResponse({"user_data": {
-                    "avatar": user.avatar_id,
-                    "username": user.username,
-                    "fullname": user.fullname,
-                    "phone_number": user.phone_number,
-                    "email":user.email,
-                    'status': user.status,
-                    "group": user.get_groups(),
-                }})
+                token = Token.objects.get(user=user)
+                return JsonResponse({"token": token.key})
+                # return JsonResponse({"user_data": {
+                #     "avatar": user.avatar_id,
+                #     "username": user.username,
+                #     "fullname": user.fullname,
+                #     "phone_number": user.phone_number,
+                #     "email":user.email,
+                #     'status': user.status,
+                #     "group": user.get_groups(),
+                # }})
             else:
                 return JsonResponse({"error": "user not found"})
         except Exception as e:
